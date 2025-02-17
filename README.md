@@ -8,9 +8,10 @@ A C++ console-based Simplified Bank Management System that allows users to manag
 - Delete clients  
 - Update client details  
 - Find clients by account number
+- Transaction management (deposits, withdrawals, show total balances)
 
 ### Upcoming Features  
-- Transaction management (deposits, withdrawals, transfers)  
+- ...
 - ...
 
 ### Requirements  
