@@ -10,6 +10,10 @@ void exitToBankMainSecreen() {
 	cout << "\nEnter any key to go to the Bank Main Secreen..";
 	system("pause");
 }
+void exitToTransactionsSecreen() {
+	cout << "\nEnter any key to go to the Transactions Secreen..";
+	system("pause");
+}
 
 struct stClient {
 	string accountNumber;
@@ -130,6 +134,7 @@ void addClientRecordsFromVectorToFile(stClient client, vector<stClient>& clients
 	}
 }
 
+// Main Functions
 bool findClientByAccountNumber(string accountNumber, vector<stClient>& clients, stClient& client) {
 	for (stClient& clientInClients : clients) {
 		if (accountNumber == clientInClients.accountNumber) {
@@ -139,7 +144,6 @@ bool findClientByAccountNumber(string accountNumber, vector<stClient>& clients, 
 	}
 	return false;
 }
-
 void showClintList(vector<stClient>& clients) {
 	cout << "\t\t\t\tClient List (" << clients.size() << ") Client(s)." << endl;
 	cout << "_____________________________________________________________________________________" << endl << endl;
@@ -253,6 +257,7 @@ void updateClient(vector<stClient>& clients) {
 		for (stClient& clientInClients : clients) {
 			if (accountNumber == clientInClients.accountNumber) {
 				readClientWithoutAccountNumber(clientInClients);
+				break;
 			}
 		}
 		storeClientRecordsFromVectorToFile(clients);
@@ -287,7 +292,147 @@ void exitProgram() {
 	cout << "---------------------------------------" << endl;
 }
 
-enum enChoiceOption {showClientListOption=1, addClientOption, deleteClientOption, updateClientOption, findClientOption, exitOption};
+// Transactions Functions
+bool depositMoneyToClientByAccountNumber(string accountNumber, vector<stClient>& clients, float amount) {
+	char answer = 'n';
+	cout << "Are you sure that you want to perform this transaction? (y/n): ";
+	cin >> answer;
+
+	if (tolower(answer) == 'y') {
+		for (stClient& clientInClients : clients) {
+			if (accountNumber == clientInClients.accountNumber) {
+				clientInClients.balance += amount;
+				storeClientRecordsFromVectorToFile(clients);
+				cout << "Transaction Done Seccessfully!, The New Balance is: " << clientInClients.balance << endl;
+				return true;
+			}
+		}
+	}
+	return false;
+}
+void depositMoneyToClient(vector<stClient>& clients) {
+	cout << "---------------------------------------" << endl;
+	cout << "\t\tDeposit Money" << endl;
+	cout << "---------------------------------------" << endl << endl;
+
+	stClient client;
+	string accountNumber = readAccountNumber();
+
+	while (!findClientByAccountNumber(accountNumber, clients, client)) {
+		cout << "Client with [" << accountNumber << "] dosen't exists, Enter another ";
+		accountNumber = readAccountNumber();
+	}
+
+	printClient(client);
+
+	float depositAmount;
+	cout << "Enter deposit amount: ";
+	cin >> depositAmount;
+
+	depositMoneyToClientByAccountNumber(accountNumber, clients, depositAmount);
+
+	loadClientRecordsFromFileToVector(clients);
+
+	exitToTransactionsSecreen();
+}
+void withdrawMoneyFromClient(vector<stClient>& clients) {
+	cout << "---------------------------------------" << endl;
+	cout << "\t\Withdraw Money" << endl;
+	cout << "---------------------------------------" << endl << endl;
+
+	stClient client;
+	string accountNumber = readAccountNumber();
+
+	while (!findClientByAccountNumber(accountNumber, clients, client)) {
+		cout << "Client with [" << accountNumber << "] dosen't exists, Enter another ";
+		accountNumber = readAccountNumber();
+	}
+
+	printClient(client);
+
+	float withdrawAmount;
+	cout << "Enter withdraw amount: ";
+	cin >> withdrawAmount;
+
+	while (withdrawAmount > client.balance) {
+		cout << "Amount Exceeds the Balance, you can withdraw up to " << client.balance << " only!" << endl;
+		cout << "Enter withdraw amount: ";
+		cin >> withdrawAmount;
+	}
+
+	depositMoneyToClientByAccountNumber(accountNumber, clients, withdrawAmount * -1);
+
+	loadClientRecordsFromFileToVector(clients);
+
+	exitToTransactionsSecreen();
+}
+void showTotalBalancesClient(vector<stClient>& clients) {
+	cout << "\t\t\t\tClient List (" << clients.size() << ") Client(s)." << endl;
+	cout << "_____________________________________________________________________________________" << endl << endl;
+	cout << "| " << setw(15) << left << "Account Number";
+	cout << "| " << setw(30) << left << "Client Name";
+	cout << "| " << setw(12) << left << "Balance" << endl;
+	cout << "_____________________________________________________________________________________" << endl << endl;
+
+	loadClientRecordsFromFileToVector(clients);
+
+	float totalBalance = 0;
+	for (stClient& client : clients) {
+		totalBalance += client.balance;
+		cout << "| " << setw(15) << left << client.accountNumber;
+		cout << "| " << setw(30) << left << client.name;
+		cout << "| " << setw(12) << left << client.balance << endl;
+	}
+	cout << "_____________________________________________________________________________________" << endl;
+
+	cout << "\n\t\t\t\t" << "  Total Balances = " << totalBalance << endl;
+
+	exitToTransactionsSecreen();
+}
+
+
+// Transactions Screen
+enum enTransactionsOption { deposit = 1, withdraw, totalBalances, mainScreen};
+void performTransactionsOperations(short choice, vector<stClient>& clients) {
+	switch (choice) {
+	case enTransactionsOption::deposit:
+		system("cls");
+		depositMoneyToClient(clients);
+		break;
+	case enTransactionsOption::withdraw:
+		system("cls");
+		withdrawMoneyFromClient(clients);
+		break;
+	case enTransactionsOption::totalBalances:
+		system("cls");
+		showTotalBalancesClient(clients);
+	}
+}
+void TransactionsScreen(vector<stClient>& clients) {
+	short choice;
+
+	do {
+		system("cls");
+		cout << "==========================================" << endl;
+		cout << "\t\tTransactions Screen" << endl;
+		cout << "==========================================" << endl;
+		cout << "[1] Deposit." << endl;
+		cout << "[2] Withdraw." << endl;
+		cout << "[3] Total Balances." << endl;
+		cout << "[4] Main Screen." << endl;
+		cout << "==========================================" << endl << endl;
+
+
+		cout << "Choose what do you want to do? [1-4]: ";
+		cin >> choice;
+
+		performTransactionsOperations((enTransactionsOption)choice, clients);
+
+	} while (choice != enTransactionsOption::mainScreen);
+}
+
+// Main Screen
+enum enChoiceOption { showClientListOption = 1, addClientOption, deleteClientOption, updateClientOption, findClientOption, transactionsOption, exitOption };
 void performOperations(short choice, vector<stClient>& clients) {
 	switch (choice) {
 	case enChoiceOption::showClientListOption:
@@ -310,6 +455,10 @@ void performOperations(short choice, vector<stClient>& clients) {
 		system("cls");
 		findClient(clients);
 		break;
+	case enChoiceOption::transactionsOption:
+		system("cls");
+		TransactionsScreen(clients);
+		break;
 	case enChoiceOption::exitOption:
 		system("cls");
 		exitProgram();
@@ -319,11 +468,12 @@ void performOperations(short choice, vector<stClient>& clients) {
 		break;
 	}
 }
-
 void BankMainScreen() {
 	vector<stClient> clients;
+	loadClientRecordsFromFileToVector(clients);
+
 	short choice;
-	
+
 	do {
 		system("cls");
 		cout << "==========================================" << endl;
@@ -334,11 +484,12 @@ void BankMainScreen() {
 		cout << "[3] Delete Client." << endl;
 		cout << "[4] Update Client." << endl;
 		cout << "[5] Find Client." << endl;
-		cout << "[6] Exit." << endl;
+		cout << "[6] Transactions." << endl;
+		cout << "[7] Exit." << endl;
 		cout << "==========================================" << endl << endl;
 
 
-		cout << "Choose what do you want to do? [1-6]: ";
+		cout << "Choose what do you want to do? [1-7]: ";
 		cin >> choice;
 
 		performOperations((enChoiceOption)choice, clients);
