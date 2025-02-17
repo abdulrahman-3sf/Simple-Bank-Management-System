@@ -1,4 +1,0 @@
-﻿  Bank.cpp
-C:\Users\abdas\OneDrive - Umm Al-Qura University\Documents\source\repos\Bank\Bank\Bank.cpp(72,30): warning C4267: '=': conversion from 'size_t' to 'int', possible loss of data
-C:\Users\abdas\OneDrive - Umm Al-Qura University\Documents\source\repos\Bank\Bank\Bank.cpp(340,10): warning C4129: 'W': unrecognized character escape sequence
-  Bank.vcxproj -> C:\Users\abdas\OneDrive - Umm Al-Qura University\Documents\source\repos\Bank\x64\Debug\Bank.exe
