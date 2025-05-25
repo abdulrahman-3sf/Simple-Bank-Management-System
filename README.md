@@ -21,10 +21,6 @@ A C++ console-based **Simplified Bank Management System** that allows users to m
 - **Permission System**
   - Fine-grained access control for different actions (view, add, delete, update, transactions)
 
-### 🔜 Upcoming Features
-- ...
-- ...
-
 ### 📋 Requirements
 - C++ compiler
 - A terminal or command prompt environment
